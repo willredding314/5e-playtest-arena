@@ -1,0 +1,2 @@
+Things to Return to:
+    - conditions on skill checks (ConditionAutoFail + AdvModifier)

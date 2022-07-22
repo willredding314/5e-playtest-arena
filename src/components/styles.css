@@ -1,0 +1,65 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
+
+
+#tsparticles {
+    position: fixed;
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    left: 0;
+    top: 0;
+}
+
+.settings-section {
+    z-index: 1;
+    position: relative;
+    margin-top: 150px;
+}
+
+.settings-title {
+    font-size: 120px;
+    text-align: center;
+}
+
+.center {
+    text-align: center;
+}
+
+.start-button-div {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+}
+
+.start-button {
+    --reactive-button-font-size: 30px !important;
+    --reactive-button-primary-color: #F78733 !important;
+}
+
+.white-s {
+    color: white;
+    font-family: 'Bebas Neue'
+}
+
+.white {
+    color: white;
+}
+
+.white-c {
+    color: white;
+    justify-content: center;
+    display: flex;
+}
+
+.arena-section {
+    z-index: 1;
+    position: relative;
+    margin-top: 50px;
+}
+
+.board-cell {
+    border: 1px solid;
+    width: 60px;
+    height: 60px;
+}

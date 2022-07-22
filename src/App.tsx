@@ -1,26 +1,45 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { useState } from 'react';
+import internal from 'stream';
 import './App.css';
+import Arena from './components/arena';
+import Settings from './components/settings';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import { CharBuild } from './model/char';
+import { GameSettings } from './model/game';
 
-function App() {
+
+const App = () => {
+
+  const baseSettings: GameSettings = {
+    characterSet: new Map<number, CharBuild>(),
+    numPlayers: 1,
+    numEnemies: 1,
+    enemyType: "goblin",
+    battlefield: "desert",
+  }
+
+  const [mode, setMode] = useState('settings')
+  const [gameSettings, setGameSettings] = useState<GameSettings>(baseSettings)
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="pages">
+
+      {mode === 'settings' && (
+        <Settings
+          settings={gameSettings}
+          onStartClick={() => setMode('arena')}
+        />
+      )}
+
+      {mode === 'arena' && (
+        <Arena
+          settings={gameSettings}
+        />
+      )}
+
     </div>
   );
 }
+
 
 export default App;
