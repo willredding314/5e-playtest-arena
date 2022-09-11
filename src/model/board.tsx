@@ -21,7 +21,9 @@ export var emptyCell: Cell = {
 
 export var cells72: Cell[] = [];
 for (let i = 0; i < 96; i++) {
-    cells72[i] = emptyCell
+    var placeholder = {}
+    var newEmptyCell = Object.assign(placeholder, emptyCell)
+    cells72[i] = newEmptyCell
 }
 
 export var sampleBoard: Board = {

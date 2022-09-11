@@ -63,3 +63,14 @@
     width: 60px;
     height: 60px;
 }
+
+.controls-section {
+    z-index: 1;
+    position: relative;
+    margin-top: 50px;
+}
+
+.print-section {
+    z-index: 1;
+    position: relative;
+}

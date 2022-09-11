@@ -1,8 +1,9 @@
+import { BattleData, PreMoveData } from "../components/arena";
 import { CharBuild, Modifier } from "./char";
 import { Roll } from "./roll";
 
 export interface GameSettings {
-    characterSet: Map<number, CharBuild>;
+    characterSet: [number, CharBuild][];
     numPlayers: number;
     numEnemies: number;
     enemyType: string;
@@ -14,39 +15,81 @@ export interface Skill {
     ability: string;
 }
 
-export function RollInitiativeGroup(chars: Map<number, CharBuild>): Map<number, CharBuild> {
+export function ExecuteTurn(moveData: PreMoveData, data: BattleData): BattleData {
 
-    var initOrder = new Map<number, CharBuild>()
+    switch(moveData.determinedMove[1]) {
+        case 'pass':
+            return data
+        case 'move':
+            return ExecuteMove(moveData, data)
+    }
 
-    chars.forEach((value: CharBuild) => {
-        var init = RollInitiative(value);
-        initOrder.set(init, value);
+    return data
+}
+
+function ExecuteMove(moveData: PreMoveData, data: BattleData): BattleData {
+
+    
+    return data
+}
+
+export function CharsOnTurn(orderChars: [number, CharBuild][], init: number): CharBuild[]{
+
+    var returnChars: CharBuild[] = []
+    orderChars.forEach((value: [number, CharBuild]) => {
+        if (value[0] == init) {
+            returnChars.push(value[1])
+        }
     })
 
-    return initOrder
+    return returnChars 
 }
 
-export function RollInitiative(char: CharBuild): number {
+export function RollInitiativeGroup(chars: [number, CharBuild][]): [[number, CharBuild][], string[]] {
 
+    var initOrder: [number, CharBuild][] = []
 
-    return 0
+    for (let i = 0; i < chars.length; i++) {
+        var init = RollInitiative(chars[i][1])
+        var placeholder = {}
+        var newChar = Object.assign(placeholder, chars[i][1])
+        initOrder.push([init[0], newChar])
+    }
+
+    return [initOrder, []]
 }
 
-export function SkillCheck(char: CharBuild, skill: Skill, tags: string[]): number {
+export function RollInitiative(char: CharBuild): [number, string[]] {
 
-    var condFail = ConditionAutoFail(char, skill);
-    var baseMod = Modifier(char, skill.ability);
-    var profBonus = SkillBonus(char, skill.name);
-    var naturalAdv = AdvModifier(char, skill, tags);
-    var additionalMods = AdditionalSkillModifier(char, skill, tags);
+    var initiative: Skill = {
+        name: 'initiative',
+        ability: 'dex'
+    }
+
+    var reTags: string[] = []
+
+    var res = SkillCheck(char, initiative, reTags)
+    return res
+}
+
+export function SkillCheck(char: CharBuild, skill: Skill, tags: string[]): [number, string[]] {
+
+    var reTags: string[] = []
+    reTags.push(char.id, 'skill', skill.ability, skill.name)
+
+    var condFail = ConditionAutoFail(char, skill)
+    var baseMod = GetModifier(char, skill.ability)
+    var profBonus = SkillBonus(char, skill.name)
+    var naturalAdv = AdvModifier(char, skill, tags)
+    var additionalMods = AdditionalSkillModifier(char, skill, tags)
 
     if (condFail) {
-        return -20
+        tags.push('fail')
+        return [-20, reTags]
     }
 
     var totalMod = baseMod + profBonus + additionalMods;
     var totalAdv = ''
-    var total = 0
 
     if (naturalAdv != 'null') {
         var tagAdv = tags.includes('adv')
@@ -70,10 +113,15 @@ export function SkillCheck(char: CharBuild, skill: Skill, tags: string[]): numbe
         }
     }
 
-    var rollNum = Roll(20, totalAdv)
+    if (totalAdv === 'dis' || totalAdv === 'adv') {
+        reTags.push(totalAdv)
+    }
+
+    var rollNum = Roll(20, totalAdv) + totalMod
+    reTags.push(rollNum.toString())
     rollNum = MinimumRollSkill(char, skill, tags, rollNum)
 
-    return rollNum
+    return [rollNum, reTags]
 }
 
 export function MinimumRollSkill(char: CharBuild, skill: Skill, tags: string[], rollNum: number): number {
@@ -97,13 +145,13 @@ export function AdditionalSkillModifier(char: CharBuild, skill: Skill, tags: str
     var mod = 0
 
     for (let i = 0; i < char.mods.length; i++) {
-        var currMod = char.mods[i];
-        var tempTags = tags; 
+        var currMod = char.mods[i]
+        var tempTags = tags
         tempTags.push(skill.ability, skill.name);
         if (RelevantMods(currMod, tempTags)) {
-            mod = mod + currMod.diff;
+            mod = mod + currMod.diff
             if (currMod.diffProf) {
-                mod = mod + char.profb;
+                mod = mod + char.profb
             }
         }
     }
@@ -117,14 +165,14 @@ export function AdvModifier(char: CharBuild, skill: Skill, tags: string[]): stri
     var diss = 0;
 
     for (let i = 0; i < char.mods.length; i++) {
-        var currMod = char.mods[i];
-        var tempTags = tags; 
+        var currMod = char.mods[i]
+        var tempTags = tags
         tempTags.push(skill.ability, skill.name);
         if (RelevantMods(currMod, tempTags)) {
             if (currMod.adv === true) {
-                advs++;
+                advs++
             } else if (currMod.dis === true) {
-                diss++;
+                diss++
             }
         }
     }
@@ -165,7 +213,7 @@ export function SkillBonus(char: CharBuild, skill: string): number {
     }
 }
 
-export function Modifier(char: CharBuild, stat: string): number {
+export function GetModifier(char: CharBuild, stat: string): number {
 
     if (stat === 'str') {
         return Math.floor((char.str - 10) / 2) 

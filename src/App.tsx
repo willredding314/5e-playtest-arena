@@ -4,14 +4,18 @@ import './App.css';
 import Arena from './components/arena';
 import Settings from './components/settings';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { CharBuild } from './model/char';
+import { CharBuild, LuxumNewman, LuxumNewman2 } from './model/char';
 import { GameSettings } from './model/game';
 
 
 const App = () => {
 
+  var startCharSet: [number, CharBuild][] = []
+  startCharSet.push([0, LuxumNewman])
+  startCharSet.push([1, LuxumNewman2])
+
   const baseSettings: GameSettings = {
-    characterSet: new Map<number, CharBuild>(),
+    characterSet: startCharSet,
     numPlayers: 1,
     numEnemies: 1,
     enemyType: "goblin",

@@ -1,9 +1,12 @@
-import { randomInt } from "crypto";
+
+function randomInt(max: number) {
+    return Math.floor(Math.random() * max + 1);
+}
 
 export function Roll(die: number, adv: string): number {
 
-    var r1 = randomInt(1, die);
-    var r2 = randomInt(1, die);
+    var r1 = randomInt(die);
+    var r2 = randomInt(die);
     var higher: number;
     var lower: number;
     if (r1 > r2) {
@@ -15,10 +18,13 @@ export function Roll(die: number, adv: string): number {
     }
 
     if (adv === 'adv') {
+        console.log(higher)
         return higher
     } else if (adv === 'dis') {
+        console.log(lower)
         return lower
     } else {
+        console.log(r1)
         return r1
     }
 }
